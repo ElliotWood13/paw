@@ -55,10 +55,10 @@ class EstimatePageState extends State<EstimatePage> {
               key: _formKey,
               onChanged: _validateForm(),
               child: Container(
-                padding: EdgeInsets.fromLTRB(16, 24, 16, 24),
+                padding: EdgeInsets.fromLTRB(16, 32, 16, 32),
                 decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(48),
                     border: Border.all(color: Colors.black, width: 1)),
                 margin: EdgeInsets.only(bottom: 20),
                 child: Column(
@@ -98,7 +98,13 @@ class EstimatePageState extends State<EstimatePage> {
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyLarge
-                                    ?.copyWith(fontWeight: FontWeight.bold))),
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor:
+                                          Theme.of(context).primaryColor,
+                                      decorationThickness: 2,
+                                    ))),
                         Text('to insure your cat!',
                             style: Theme.of(context).textTheme.bodySmall),
                       ])

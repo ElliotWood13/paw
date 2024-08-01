@@ -34,10 +34,10 @@ class CustomElevatedButton extends StatelessWidget {
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
-                color: Colors.black,
-                offset: Offset(2, 3),
+                color: disabled == false ? Colors.black : Colors.grey.shade700,
+                offset: Offset(2, 2),
                 blurRadius: 0,
-                spreadRadius: 1,
+                spreadRadius: 0,
               ),
             ],
             borderRadius: BorderRadius.circular(20),
@@ -45,17 +45,19 @@ class CustomElevatedButton extends StatelessWidget {
           child: ElevatedButton(
             onPressed: onPressed,
             style: ButtonStyle(
-              backgroundColor: disabled == false
-                  ? WidgetStateProperty.all(Color.fromRGBO(177, 255, 158, 1))
-                  : WidgetStateProperty.all(Color.fromRGBO(217, 247, 205, 1)),
-              foregroundColor: disabled == false
-                  ? WidgetStateProperty.all(Colors.black)
-                  : WidgetStateProperty.all(Colors.grey[700]),
+              backgroundColor: WidgetStateProperty.all(disabled == false
+                  ? Color.fromRGBO(177, 255, 158, 1)
+                  : Color.fromRGBO(228, 239, 224, 1)),
+              foregroundColor: WidgetStateProperty.all(
+                  disabled == false ? Colors.black : Colors.grey[700]),
               padding: WidgetStateProperty.all(
                   EdgeInsets.symmetric(vertical: 16, horizontal: 32)),
               shape: WidgetStateProperty.all(RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
-                side: BorderSide(color: Colors.black),
+                side: BorderSide(
+                    color:
+                        disabled == false ? Colors.black : Colors.grey.shade700,
+                    width: 3),
               )),
               elevation: WidgetStateProperty.all(0),
             ),
