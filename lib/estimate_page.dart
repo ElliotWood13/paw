@@ -4,14 +4,33 @@ import 'package:provider/provider.dart';
 import 'package:paw/state/my_app_state.dart';
 import 'package:paw/components/elevated_button.dart';
 
-class EstimatePage extends StatelessWidget {
+class EstimatePage extends StatefulWidget {
+  @override
+  EstimatePageState createState() => EstimatePageState();
+}
+
+class EstimatePageState extends State<EstimatePage> {
+  final _formKey = GlobalKey<FormState>();
+  String? ageRange;
+  String? deSexed;
+  bool isFormComplete = false;
+
+  _validateForm() {
+    print("validaitng");
+    if (ageRange != null && deSexed != null) {
+      setState(() {
+        isFormComplete = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    var pair = appState.current;
+    var basket = appState.basket;
 
     IconData icon;
-    if (appState.basket.contains(pair)) {
+    if (basket.contains('85')) {
       icon = Icons.shopping_basket;
     } else {
       icon = Icons.shopping_basket_outlined;
@@ -21,14 +40,20 @@ class EstimatePage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Get a Quote in a Meowment..',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineLarge
-                  ?.copyWith(fontWeight: FontWeight.bold)),
+          SizedBox(
+            width: 250,
+            child: Text('Get a Quote in a Meowment..',
+                textAlign: TextAlign.center,
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineLarge
+                    ?.copyWith(fontWeight: FontWeight.bold)),
+          ),
           SizedBox(height: 65),
           Stack(children: [
             Form(
+              key: _formKey,
+              onChanged: _validateForm(),
               child: Container(
                 padding: EdgeInsets.fromLTRB(16, 24, 16, 24),
                 decoration: BoxDecoration(
@@ -39,12 +64,14 @@ class EstimatePage extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('What is the age range of your cat?'),
+                    Text('What is the age of your cat?'),
                     SizedBox(height: 10),
                     CustomDropdownButton(
                       items: ['0-3', '4-7', '8-10', '10+'],
                       onChanged: (value) {
-                        print('Selected: $value');
+                        setState(() {
+                          ageRange = value;
+                        });
                       },
                     ),
                     SizedBox(height: 30),
@@ -53,35 +80,52 @@ class EstimatePage extends StatelessWidget {
                     CustomDropdownButton(
                       items: ['Yes', 'No'],
                       onChanged: (value) {
-                        print('Selected: $value');
+                        setState(() {
+                          deSexed = value;
+                        });
                       },
                     ),
+                    if (isFormComplete)
+                      Column(children: [
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(0, 30, 0, 5),
+                          child: Text('We estimate it would cost:',
+                              style: Theme.of(context).textTheme.bodySmall),
+                        ),
+                        Padding(
+                            padding: EdgeInsets.only(bottom: 5),
+                            child: Text('\$85.00 per month',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(fontWeight: FontWeight.bold))),
+                        Text('to insure your cat!',
+                            style: Theme.of(context).textTheme.bodySmall),
+                      ])
                   ],
                 ),
               ),
             ),
             Transform.translate(
-              offset: Offset(50, -120), // Move the image upwards by 10 pixels
+              offset: isFormComplete ? Offset(30, -103) : Offset(30, -120),
               child: Image.asset(
-                'assets/cat_avatar.png', // Path to your asset
-                width: 200.0, // Set the desired width
-                height: 200.0, // Set the desired height
+                isFormComplete
+                    ? 'assets/cat_avatar_quote.png'
+                    : 'assets/cat_avatar.png',
+                width: 200.0,
+                height: 200.0,
               ),
             ),
           ]),
           SizedBox(height: 10),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CustomElevatedButton(
-                icon: Icon(icon),
-                text: 'Add to basket',
-                onPressed: () {
-                  appState.toggleBasket();
-                },
-              )
-            ],
-          ),
+          CustomElevatedButton(
+            icon: Icon(icon),
+            text: 'Add to basket',
+            disabled: !isFormComplete,
+            onPressed: () {
+              isFormComplete ? appState.toggleBasket('85') : null;
+            },
+          )
         ],
       ),
     );

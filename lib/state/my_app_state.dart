@@ -1,21 +1,13 @@
-import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 
 class MyAppState extends ChangeNotifier {
-  var current = WordPair.random();
+  var basket = [];
 
-  void getNext() {
-    current = WordPair.random();
-    notifyListeners();
-  }
-
-  var basket = <WordPair>[];
-
-  void toggleBasket() {
-    if (basket.contains(current)) {
-      basket.remove(current);
+  void toggleBasket(value) {
+    if (basket.contains(value)) {
+      basket.remove(value);
     } else {
-      basket.add(current);
+      basket.add(value);
     }
     notifyListeners();
   }

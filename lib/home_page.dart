@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'basket_page.dart';
 import 'estimate_page.dart';
+import 'components/basket_counter_icon.dart';
+import 'package:provider/provider.dart';
+import 'package:paw/state/my_app_state.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -26,7 +29,8 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Row(
         children: [
           SafeArea(
-            child: NavigationRail(
+              child: Consumer<MyAppState>(
+            builder: (context, appState, _) => NavigationRail(
               extended: false,
               destinations: [
                 NavigationRailDestination(
@@ -34,8 +38,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   label: Text('Home'),
                 ),
                 NavigationRailDestination(
-                  icon: Icon(Icons.shopping_basket),
-                  label: Text('Favorites'),
+                  icon:
+                      BasketIconWithCounter(itemCount: appState.basket.length),
+                  label: Text('Basket'),
                 ),
               ],
               selectedIndex: selectedIndex,
@@ -45,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
               },
             ),
-          ),
+          )),
           Expanded(
             child: Container(
               color: Theme.of(context).colorScheme.primaryContainer,

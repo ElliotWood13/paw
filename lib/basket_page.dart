@@ -6,6 +6,7 @@ class BasketPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+    var basketLength = appState.basket.length;
 
     if (appState.basket.isEmpty) {
       return Center(
@@ -18,12 +19,12 @@ class BasketPage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(20),
           child: Text('You have '
-              '${appState.basket.length} in your basket:'),
+              '$basketLength item${basketLength > 1 ? 's' : ''} in your basket:'),
         ),
-        for (var pair in appState.basket)
+        for (var item in appState.basket)
           ListTile(
             leading: Icon(Icons.favorite),
-            title: Text(pair.asLowerCase),
+            title: Text(item),
           ),
       ],
     );
