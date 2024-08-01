@@ -20,44 +20,41 @@ class _MyHomePageState extends State<MyHomePage> {
       case 0:
         page = EstimatePage();
       case 1:
+        page = EstimatePage();
+      case 2:
         page = BasketPage();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
     return Scaffold(
-      body: Row(
-        children: [
-          SafeArea(
-              child: Consumer<MyAppState>(
-            builder: (context, appState, _) => NavigationRail(
-              extended: false,
-              destinations: [
-                NavigationRailDestination(
-                  icon: Icon(Icons.home),
-                  label: Text('Home'),
-                ),
-                NavigationRailDestination(
-                  icon:
-                      BasketIconWithCounter(itemCount: appState.basket.length),
-                  label: Text('Basket'),
-                ),
-              ],
-              selectedIndex: selectedIndex,
-              onDestinationSelected: (value) {
-                setState(() {
-                  selectedIndex = value;
-                });
-              },
+      body: Container(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        child: page,
+      ),
+      bottomNavigationBar: Consumer<MyAppState>(
+        builder: (context, appState, _) => BottomNavigationBar(
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
             ),
-          )),
-          Expanded(
-            child: Container(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              child: page,
+            BottomNavigationBarItem(
+              icon: Icon(Icons.policy),
+              label: 'Insurance',
             ),
-          ),
-        ],
+            BottomNavigationBarItem(
+              icon: BasketIconWithCounter(itemCount: appState.basket.length),
+              label: 'Basket',
+            ),
+          ],
+          currentIndex: selectedIndex,
+          onTap: (value) {
+            setState(() {
+              selectedIndex = value;
+            });
+          },
+        ),
       ),
     );
   }

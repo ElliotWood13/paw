@@ -14,7 +14,6 @@ class BasketPageState extends State<BasketPage> {
   bool isChecked = false;
 
   void toggleExtras(bool? value, int amount) {
-    print('$value, $amount');
     if (value == null) return;
 
     setState(() {

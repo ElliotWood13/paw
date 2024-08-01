@@ -16,7 +16,6 @@ class EstimatePageState extends State<EstimatePage> {
   bool isFormComplete = false;
 
   _validateForm() {
-    print("validaitng");
     if (ageRange != null && deSexed != null) {
       setState(() {
         isFormComplete = true;
