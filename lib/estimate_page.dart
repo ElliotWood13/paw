@@ -35,104 +35,129 @@ class EstimatePageState extends State<EstimatePage> {
       icon = Icons.shopping_basket_outlined;
     }
 
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 250,
-            child: Text('Get a Quote in a Meowment..',
-                textAlign: TextAlign.center,
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineLarge
-                    ?.copyWith(fontWeight: FontWeight.bold)),
+    return Stack(
+      children: [
+        Positioned(
+          top: 16.0,
+          left: 16.0,
+          child: Image.asset(
+            'assets/logo.png',
+            width: 50.0,
+            height: 50.0,
           ),
-          SizedBox(height: 65),
-          Stack(children: [
-            Form(
-              key: _formKey,
-              onChanged: _validateForm(),
-              child: Container(
-                padding: EdgeInsets.fromLTRB(16, 32, 16, 32),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(48),
-                    border: Border.all(color: Colors.black, width: 1)),
-                margin: EdgeInsets.only(bottom: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('What is the age of your cat?'),
-                    SizedBox(height: 10),
-                    CustomDropdownButton(
-                      items: ['0-3', '4-7', '8-10', '10+'],
-                      onChanged: (value) {
-                        setState(() {
-                          ageRange = value;
-                        });
-                      },
-                    ),
-                    SizedBox(height: 30),
-                    Text('Has your cat been de-sexed?'),
-                    SizedBox(height: 10),
-                    CustomDropdownButton(
-                      items: ['Yes', 'No'],
-                      onChanged: (value) {
-                        setState(() {
-                          deSexed = value;
-                        });
-                      },
-                    ),
-                    if (isFormComplete)
-                      Column(children: [
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(0, 30, 0, 5),
-                          child: Text('We estimate it would cost:',
-                              style: Theme.of(context).textTheme.bodySmall),
-                        ),
-                        Padding(
-                            padding: EdgeInsets.only(bottom: 5),
-                            child: Text('\$85.00 per month',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      decoration: TextDecoration.underline,
-                                      decorationColor:
-                                          Theme.of(context).primaryColor,
-                                      decorationThickness: 2,
-                                    ))),
-                        Text('to insure your cat!',
-                            style: Theme.of(context).textTheme.bodySmall),
-                      ])
-                  ],
+        ),
+        Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 250,
+                child: Text(
+                  'Get a Quote in a Meowment..',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
-            ),
-            Transform.translate(
-              offset: isFormComplete ? Offset(30, -103) : Offset(30, -120),
-              child: Image.asset(
-                isFormComplete
-                    ? 'assets/cat_avatar_quote.png'
-                    : 'assets/cat_avatar.png',
-                width: 200.0,
-                height: 200.0,
+              SizedBox(height: 65),
+              Stack(
+                children: [
+                  Form(
+                    key: _formKey,
+                    onChanged: _validateForm(),
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(16, 32, 16, 32),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(48),
+                          border: Border.all(color: Colors.black, width: 1)),
+                      margin: EdgeInsets.only(bottom: 20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('What is the age of your cat?'),
+                          SizedBox(height: 10),
+                          CustomDropdownButton(
+                            items: ['0-3', '4-7', '8-10', '10+'],
+                            onChanged: (value) {
+                              setState(() {
+                                ageRange = value;
+                              });
+                            },
+                          ),
+                          SizedBox(height: 30),
+                          Text('Has your cat been de-sexed?'),
+                          SizedBox(height: 10),
+                          CustomDropdownButton(
+                            items: ['Yes', 'No'],
+                            onChanged: (value) {
+                              setState(() {
+                                deSexed = value;
+                              });
+                            },
+                          ),
+                          if (isFormComplete)
+                            Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(0, 30, 0, 5),
+                                  child: Text('We estimate it would cost:',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 5),
+                                  child: Text('\$85.00 per month',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline,
+                                            decorationColor:
+                                                Theme.of(context).primaryColor,
+                                            decorationThickness: 2,
+                                          )),
+                                ),
+                                Text('to insure your cat!',
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Transform.translate(
+                    offset:
+                        isFormComplete ? Offset(30, -103) : Offset(30, -120),
+                    child: Image.asset(
+                      isFormComplete
+                          ? 'assets/cat_avatar_quote.png'
+                          : 'assets/cat_avatar.png',
+                      width: 200.0,
+                      height: 200.0,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ]),
-          SizedBox(height: 10),
-          CustomElevatedButton(
-            icon: Icon(icon),
-            text: 'Add to basket',
-            disabled: !isFormComplete,
-            onPressed: () {
-              isFormComplete ? appState.toggleBasket('85') : null;
-            },
-          )
-        ],
-      ),
+              SizedBox(height: 10),
+              CustomElevatedButton(
+                icon: Icon(icon),
+                text: 'Add to basket',
+                disabled: !isFormComplete,
+                onPressed: () {
+                  isFormComplete ? appState.toggleBasket('85') : null;
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

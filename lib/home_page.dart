@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'basket_page.dart';
 import 'estimate_page.dart';
+import 'empty_page.dart';
 import 'components/basket_counter_icon.dart';
 import 'package:provider/provider.dart';
 import 'package:paw/state/my_app_state.dart';
@@ -18,7 +19,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = EstimatePage();
+        page = EmptyPage();
       case 1:
         page = EstimatePage();
       case 2:
