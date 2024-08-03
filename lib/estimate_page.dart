@@ -51,9 +51,9 @@ class EstimatePageState extends State<EstimatePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
-                width: 250,
+                width: 300,
                 child: Text(
-                  'Get a Quote in a Meowment..',
+                  'Get an estimate in a Meowment..',
                   textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme

@@ -33,7 +33,6 @@ class CustomCheckbox extends StatelessWidget {
               activeColor: Color.fromRGBO(177, 255, 158, 1),
               checkColor: Colors.black,
             ),
-            SizedBox(width: 8),
             Text(
               label,
               style: Theme.of(context).textTheme.bodyLarge,

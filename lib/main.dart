@@ -22,9 +22,7 @@ class MyApp extends StatelessWidget {
               ColorScheme.fromSeed(seedColor: Color.fromRGBO(254, 201, 255, 1)),
           textTheme: TextTheme(
             bodyMedium: TextStyle(fontSize: 16, color: Colors.black),
-            labelLarge: TextStyle(
-                fontSize: 16,
-                color: Colors.black), // Default text style for buttons
+            labelLarge: TextStyle(fontSize: 16, color: Colors.black),
           ),
         ),
         home: MyHomePage(),
