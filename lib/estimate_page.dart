@@ -27,9 +27,10 @@ class EstimatePageState extends State<EstimatePage> {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     var basket = appState.basket;
+    var catInsurance = BasketItem(product: 'Cat Insurance', value: 85);
 
     IconData icon;
-    if (basket.contains('85')) {
+    if (basket.any((element) => element.product == catInsurance.product)) {
       icon = Icons.shopping_basket;
     } else {
       icon = Icons.shopping_basket_outlined;
@@ -151,7 +152,7 @@ class EstimatePageState extends State<EstimatePage> {
                 text: 'Add to basket',
                 disabled: !isFormComplete,
                 onPressed: () {
-                  isFormComplete ? appState.toggleBasket('85') : null;
+                  appState.toggleBasket(catInsurance);
                 },
               ),
             ],
