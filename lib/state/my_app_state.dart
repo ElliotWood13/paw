@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 class BasketItem {
   final String product;
   final double value;
+  final bool showInBasket;
 
-  BasketItem({required this.product, required this.value});
+  BasketItem(
+      {required this.product, required this.value, required this.showInBasket});
 }
 
 class MyAppState extends ChangeNotifier {

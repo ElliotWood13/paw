@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:paw/checkout_page.dart';
 import 'package:provider/provider.dart';
 import 'package:paw/state/my_app_state.dart';
 import 'package:paw/components/elevated_button.dart';
@@ -11,13 +12,15 @@ class BasketPage extends StatefulWidget {
 }
 
 class BasketPageState extends State<BasketPage> {
-  bool isChecked = false;
-
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     var basketLength = appState.basket.length;
     var orderTotal = appState.totalValue;
+    bool isCatCollarInBasket() {
+      return appState.basket
+          .any((item) => item.product == 'Premium Cat Collar');
+    }
 
     return Stack(
       children: [
@@ -88,12 +91,19 @@ class BasketPageState extends State<BasketPage> {
                         child: ListView.builder(
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
-                          itemCount: basketLength,
+                          itemCount: appState.basket
+                              .where((item) => item.showInBasket)
+                              .length,
                           itemBuilder: (context, index) {
-                            var item = appState.basket[index];
+                            var filteredItems = appState.basket
+                                .where((item) => item.showInBasket)
+                                .toList();
+                            var item = filteredItems[index];
                             return Padding(
                               padding: EdgeInsets.only(
-                                  bottom: index == basketLength - 1 ? 0 : 10),
+                                  bottom: index == filteredItems.length - 1
+                                      ? 0
+                                      : 10),
                               child: Container(
                                 padding: EdgeInsets.all(16),
                                 decoration: BoxDecoration(
@@ -170,14 +180,15 @@ class BasketPageState extends State<BasketPage> {
                     ),
                     SizedBox(height: 20),
                     CustomCheckbox(
-                      value: isChecked,
+                      value: isCatCollarInBasket(),
                       onChanged: (bool? value) {
+                        final catCollar = BasketItem(
+                            product: 'Premium Cat Collar',
+                            value: 5,
+                            showInBasket: false);
                         setState(() {
-                          isChecked = value ?? false;
+                          appState.toggleBasket(catCollar);
                         });
-                        final catCollar =
-                            BasketItem(product: 'Premium Cat Collar', value: 5);
-                        appState.toggleBasket(catCollar);
                       },
                       label: 'Add a premium cat collar? Only \$5.00',
                     ),
@@ -193,7 +204,13 @@ class BasketPageState extends State<BasketPage> {
                     SizedBox(height: 50),
                     CustomElevatedButton(
                       text: 'Continue to checkout',
-                      onPressed: () => null,
+                      onPressed: () => {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CheckoutPage()),
+                        )
+                      },
                     ),
                   ],
                 ),

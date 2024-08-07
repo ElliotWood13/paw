@@ -27,7 +27,8 @@ class EstimatePageState extends State<EstimatePage> {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     var basket = appState.basket;
-    var catInsurance = BasketItem(product: 'Cat Insurance', value: 85);
+    var catInsurance =
+        BasketItem(product: 'Cat Insurance', value: 85, showInBasket: true);
 
     IconData icon;
     if (basket.any((element) => element.product == catInsurance.product)) {
