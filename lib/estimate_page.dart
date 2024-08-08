@@ -77,7 +77,6 @@ class EstimatePageState extends State<EstimatePage> {
                           border: Border.all(color: Colors.black, width: 1)),
                       margin: EdgeInsets.only(bottom: 20),
                       child: Column(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('What is the age of your cat?'),
                           SizedBox(height: 10),
