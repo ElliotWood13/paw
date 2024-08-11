@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:paw/components/elevated_button.dart';
+import 'package:paw/components/custom_choice_chip.dart';
+import 'package:paw/components/custom_dropdown.dart';
 import 'package:paw/components/form_container.dart';
+import 'package:paw/confirm_order.dart';
 
 class CheckoutPage extends StatefulWidget {
   @override
@@ -118,30 +120,32 @@ class CheckoutPageState extends State<CheckoutPage> {
                           child: IconButton(
                             iconSize: 32,
                             icon: Icon(Icons.arrow_circle_right_outlined),
-                            onPressed: _currentPage < 8
-                                ? () {
-                                    _pageController.nextPage(
-                                      duration: Duration(milliseconds: 300),
-                                      curve: Curves.ease,
-                                    );
-                                  }
-                                : null,
+                            onPressed: () {
+                              if (_currentPage < 8) {
+                                _pageController.nextPage(
+                                  duration: Duration(milliseconds: 300),
+                                  curve: Curves.ease,
+                                );
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ConfirmOrder(),
+                                  ),
+                                );
+                              }
+                            },
                           ),
                         ),
                       ],
                     ),
                   ),
+                  // TODO: Make tertiary button for CustomElevated?
+                  TextButton(
+                    child: (Text('Back to basket')),
+                    onPressed: () => {Navigator.pop(context)},
+                  ),
                 ],
-              ),
-            ),
-            Positioned(
-              bottom: 24,
-              left: 125,
-              right: 125,
-              child: CustomElevatedButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () => {Navigator.pop(context)},
-                text: 'Back to basket',
               ),
             ),
           ],
@@ -150,6 +154,8 @@ class CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
+  // TODO: Create resuable components which are shared between these widgets
+//  TODO: Add full border/shadow around inputs inc date for consistency
   Widget _buildCatNameQuestion() {
     return FormContainer(
       child: Padding(
@@ -158,11 +164,37 @@ class CheckoutPageState extends State<CheckoutPage> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('What is your cat\'s name?'),
-            TextFormField(
-              onChanged: (value) {
-                catName = value;
-              },
+            Text(
+              'What is your cat\'s name?',
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 10),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black,
+                    offset: Offset(2, 3),
+                    blurRadius: 0,
+                    spreadRadius: 1,
+                  ),
+                ],
+                border: Border.all(color: Colors.black),
+              ),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Enter pets name',
+                ),
+                textAlign: TextAlign.center,
+                initialValue: catName,
+                onChanged: (value) {
+                  catName = value;
+                },
+              ),
             ),
           ],
         ),
@@ -178,27 +210,20 @@ class CheckoutPageState extends State<CheckoutPage> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Is your cat a boy or a girl?'),
+            Text(
+              'Is your cat a boy or a girl?',
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ChoiceChip(
-                  label: Text('Boy'),
-                  selected: catGender == 'Boy',
+                CustomChoiceChip(
+                  items: ['Boy', 'Girl'],
+                  selectedValue: catGender,
                   onSelected: (selected) {
                     setState(() {
-                      catGender = 'Boy';
-                      _nextPage();
-                    });
-                  },
-                ),
-                SizedBox(width: 10),
-                ChoiceChip(
-                  label: Text('Girl'),
-                  selected: catGender == 'Girl',
-                  onSelected: (selected) {
-                    setState(() {
-                      catGender = 'Girl';
+                      catGender = selected;
                       _nextPage();
                     });
                   },
@@ -219,19 +244,16 @@ class CheckoutPageState extends State<CheckoutPage> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('What breed is your cat?'),
-            DropdownButton<String>(
-              value: catBreed.isNotEmpty ? catBreed : null,
-              items: <String>['Siamese', 'Persian', 'Maine Coon', 'Other']
-                  .map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
+            Text(
+              'What breed is your cat?',
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 10),
+            CustomDropdownButton(
+              items: ['Siamese', 'Persian', 'Maine Coon', 'Other'],
+              onChanged: (value) {
                 setState(() {
-                  catBreed = newValue!;
+                  catBreed = value ?? 'Other';
                   _nextPage();
                 });
               },
@@ -250,30 +272,51 @@ class CheckoutPageState extends State<CheckoutPage> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('What age is your cat?'),
-            TextFormField(
-              decoration: InputDecoration(
-                hintText: 'Select date',
-              ),
-              onTap: () async {
-                DateTime? pickedDate = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime(2101),
-                );
-                if (pickedDate != null) {
-                  setState(() {
-                    catAge = pickedDate;
-                    _nextPage();
-                  });
-                }
-              },
-              readOnly: true,
-              controller: TextEditingController(
-                text: catAge != null ? catAge.toString().split(' ')[0] : '',
-              ),
+            Text(
+              'What age is your cat?',
+              textAlign: TextAlign.center,
             ),
+            SizedBox(height: 10),
+            Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black,
+                      offset: Offset(2, 3),
+                      blurRadius: 0,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                  border: Border.all(color: Colors.black),
+                ),
+                child: TextFormField(
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Select date',
+                  ),
+                  onTap: () async {
+                    DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2101),
+                    );
+                    if (pickedDate != null) {
+                      setState(() {
+                        catAge = pickedDate;
+                        _nextPage();
+                      });
+                    }
+                  },
+                  readOnly: true,
+                  controller: TextEditingController(
+                    text: catAge != null ? catAge.toString().split(' ')[0] : '',
+                  ),
+                )),
           ],
         ),
       ),
@@ -288,27 +331,24 @@ class CheckoutPageState extends State<CheckoutPage> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Has your cat been de-sexed?'),
+            Text(
+              'Has your cat been de-sexed?',
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ChoiceChip(
-                  label: Text('Yes'),
-                  selected: catDeSexed == true,
+                CustomChoiceChip(
+                  items: ['Yes', 'No'],
+                  selectedValue: catDeSexed == null
+                      ? ''
+                      : catDeSexed == true
+                          ? 'Yes'
+                          : 'No',
                   onSelected: (selected) {
                     setState(() {
-                      catDeSexed = true;
-                      _nextPage();
-                    });
-                  },
-                ),
-                SizedBox(width: 10),
-                ChoiceChip(
-                  label: Text('No'),
-                  selected: catDeSexed == false,
-                  onSelected: (selected) {
-                    setState(() {
-                      catDeSexed = false;
+                      catDeSexed = selected == 'Yes' ? true : false;
                       _nextPage();
                     });
                   },
@@ -329,11 +369,37 @@ class CheckoutPageState extends State<CheckoutPage> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('What is your human\'s name?'),
-            TextFormField(
-              onChanged: (value) {
-                ownerName = value;
-              },
+            Text(
+              'What is your human\'s name?',
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 10),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black,
+                    offset: Offset(2, 3),
+                    blurRadius: 0,
+                    spreadRadius: 1,
+                  ),
+                ],
+                border: Border.all(color: Colors.black),
+              ),
+              child: TextFormField(
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Enter your name',
+                ),
+                initialValue: ownerName,
+                onChanged: (value) {
+                  ownerName = value;
+                },
+              ),
             ),
           ],
         ),
@@ -349,30 +415,53 @@ class CheckoutPageState extends State<CheckoutPage> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('What is your owner\'s date of birth?'),
-            TextFormField(
-              decoration: InputDecoration(
-                hintText: 'Select date',
-              ),
-              onTap: () async {
-                DateTime? pickedDate = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(1900),
-                  lastDate: DateTime(2101),
-                );
-                if (pickedDate != null) {
-                  setState(() {
-                    ownerDob = pickedDate;
-                    _nextPage();
-                  });
-                }
-              },
-              readOnly: true,
-              controller: TextEditingController(
-                text: ownerDob != null ? ownerDob.toString().split(' ')[0] : '',
-              ),
+            Text(
+              'What is your owner\'s date of birth?',
+              textAlign: TextAlign.center,
             ),
+            SizedBox(height: 10),
+            Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black,
+                      offset: Offset(2, 3),
+                      blurRadius: 0,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                  border: Border.all(color: Colors.black),
+                ),
+                child: TextFormField(
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Select date',
+                  ),
+                  onTap: () async {
+                    DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2101),
+                    );
+                    if (pickedDate != null) {
+                      setState(() {
+                        ownerDob = pickedDate;
+                        _nextPage();
+                      });
+                    }
+                  },
+                  readOnly: true,
+                  controller: TextEditingController(
+                    text: ownerDob != null
+                        ? ownerDob.toString().split(' ')[0]
+                        : '',
+                  ),
+                )),
           ],
         ),
       ),
@@ -387,12 +476,38 @@ class CheckoutPageState extends State<CheckoutPage> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('What is your owner\'s address?'),
-            TextFormField(
-              onChanged: (value) {
-                ownerAddress = value;
-              },
+            Text(
+              'What is your owner\'s address?',
+              textAlign: TextAlign.center,
             ),
+            SizedBox(height: 10),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black,
+                    offset: Offset(2, 3),
+                    blurRadius: 0,
+                    spreadRadius: 1,
+                  ),
+                ],
+                border: Border.all(color: Colors.black),
+              ),
+              child: TextFormField(
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Enter address',
+                ),
+                initialValue: ownerAddress,
+                onChanged: (value) {
+                  ownerAddress = value;
+                },
+              ),
+            )
           ],
         ),
       ),
@@ -407,31 +522,53 @@ class CheckoutPageState extends State<CheckoutPage> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Planned start date'),
-            TextFormField(
-              decoration: InputDecoration(
-                hintText: 'Select date',
-              ),
-              onTap: () async {
-                DateTime? pickedDate = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime(2101),
-                );
-                if (pickedDate != null) {
-                  setState(() {
-                    startDate = pickedDate;
-                    _nextPage();
-                  });
-                }
-              },
-              readOnly: true,
-              controller: TextEditingController(
-                text:
-                    startDate != null ? startDate.toString().split(' ')[0] : '',
-              ),
+            Text(
+              'Planned start date for insurance?',
+              textAlign: TextAlign.center,
             ),
+            SizedBox(height: 10),
+            Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black,
+                      offset: Offset(2, 3),
+                      blurRadius: 0,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                  border: Border.all(color: Colors.black),
+                ),
+                child: TextFormField(
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Select date',
+                  ),
+                  onTap: () async {
+                    DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2101),
+                    );
+                    if (pickedDate != null) {
+                      setState(() {
+                        startDate = pickedDate;
+                        _nextPage();
+                      });
+                    }
+                  },
+                  readOnly: true,
+                  controller: TextEditingController(
+                    text: startDate != null
+                        ? startDate.toString().split(' ')[0]
+                        : '',
+                  ),
+                )),
           ],
         ),
       ),
