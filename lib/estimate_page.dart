@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:paw/components/custom_dropdown.dart';
+import 'package:paw/components/custom_choice_chip.dart';
 import 'package:provider/provider.dart';
 import 'package:paw/state/my_app_state.dart';
 import 'package:paw/components/elevated_button.dart';
@@ -11,16 +11,13 @@ class EstimatePage extends StatefulWidget {
 
 class EstimatePageState extends State<EstimatePage> {
   final _formKey = GlobalKey<FormState>();
-  String? ageRange;
-  String? deSexed;
   bool isFormComplete = false;
 
   _validateForm() {
-    if (ageRange != null && deSexed != null) {
-      setState(() {
-        isFormComplete = true;
-      });
-    }
+    var appState = context.read<MyAppState>();
+    setState(() {
+      isFormComplete = appState.catAge != null && appState.catDeSexed != null;
+    });
   }
 
   @override
@@ -70,6 +67,7 @@ class EstimatePageState extends State<EstimatePage> {
                     key: _formKey,
                     onChanged: _validateForm(),
                     child: Container(
+                      width: 275,
                       padding: EdgeInsets.fromLTRB(16, 32, 16, 32),
                       decoration: BoxDecoration(
                           color: Colors.white,
@@ -80,24 +78,69 @@ class EstimatePageState extends State<EstimatePage> {
                         children: [
                           Text('What is the age of your cat?'),
                           SizedBox(height: 10),
-                          CustomDropdownButton(
-                            items: ['0-3', '4-7', '8-10', '10+'],
-                            onChanged: (value) {
-                              setState(() {
-                                ageRange = value;
-                              });
-                            },
-                          ),
+                          Container(
+                              width: 175,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black,
+                                    offset: Offset(2, 3),
+                                    blurRadius: 0,
+                                    spreadRadius: 1,
+                                  ),
+                                ],
+                                border: Border.all(color: Colors.black),
+                              ),
+                              child: TextFormField(
+                                textAlign: TextAlign.center,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: 'Select date',
+                                ),
+                                onTap: () async {
+                                  DateTime? pickedDate = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime(2000),
+                                    lastDate: DateTime(2101),
+                                  );
+                                  if (pickedDate != null) {
+                                    appState.setCatAge(pickedDate);
+                                  }
+                                },
+                                readOnly: true,
+                                controller: TextEditingController(
+                                  text: appState.catAge != null
+                                      ? appState.catAge.toString().split(' ')[0]
+                                      : '',
+                                ),
+                              )),
                           SizedBox(height: 30),
-                          Text('Has your cat been de-sexed?'),
+                          Text(
+                            'Has your cat been de-sexed?',
+                            textAlign: TextAlign.center,
+                          ),
                           SizedBox(height: 10),
-                          CustomDropdownButton(
-                            items: ['Yes', 'No'],
-                            onChanged: (value) {
-                              setState(() {
-                                deSexed = value;
-                              });
-                            },
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CustomChoiceChip(
+                                items: ['Yes', 'No'],
+                                selectedValue: appState.catDeSexed == null
+                                    ? ''
+                                    : appState.catDeSexed == true
+                                        ? 'Yes'
+                                        : 'No',
+                                onSelected: (selected) {
+                                  appState.setCatDeSexed(
+                                      selected == 'Yes' ? true : false);
+                                },
+                              ),
+                            ],
                           ),
                           if (isFormComplete)
                             Column(
@@ -135,7 +178,7 @@ class EstimatePageState extends State<EstimatePage> {
                   ),
                   Transform.translate(
                     offset:
-                        isFormComplete ? Offset(30, -103) : Offset(30, -120),
+                        isFormComplete ? Offset(45, -103) : Offset(37, -120),
                     child: Image.asset(
                       isFormComplete
                           ? 'assets/cat_avatar_quote.png'

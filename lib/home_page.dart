@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:paw/checkout_page.dart';
 import 'basket_page.dart';
 import 'estimate_page.dart';
 import 'empty_page.dart';
@@ -24,6 +25,8 @@ class _MyHomePageState extends State<MyHomePage> {
         page = EstimatePage();
       case 2:
         page = BasketPage();
+      case 3:
+        page = CheckoutPage();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }

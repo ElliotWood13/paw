@@ -3,6 +3,8 @@ import 'package:paw/components/custom_choice_chip.dart';
 import 'package:paw/components/custom_dropdown.dart';
 import 'package:paw/components/form_container.dart';
 import 'package:paw/confirm_order.dart';
+import 'package:paw/state/my_app_state.dart';
+import 'package:provider/provider.dart';
 
 class CheckoutPage extends StatefulWidget {
   @override
@@ -12,21 +14,37 @@ class CheckoutPage extends StatefulWidget {
 class CheckoutPageState extends State<CheckoutPage> {
   final PageController _pageController = PageController();
   final _formKey = GlobalKey<FormState>();
-
-  String catName = '';
-  String catGender = '';
-  String catBreed = '';
-  DateTime? catAge;
-  bool? catDeSexed;
-  String ownerName = '';
-  DateTime? ownerDob;
-  String ownerAddress = '';
-  DateTime? startDate;
-
   int _currentPage = 0;
+  bool _isPageValid(int pageIndex) {
+    var appState = context.read<MyAppState>();
+    switch (pageIndex) {
+      case 0:
+        return appState.catName.isNotEmpty;
+      case 1:
+        return appState.catGender.isNotEmpty;
+      case 2:
+        return appState.catBreed.isNotEmpty;
+      case 3:
+        return appState.catAge != null;
+      case 4:
+        return appState.catDeSexed != null;
+      case 5:
+        return appState.ownerName.isNotEmpty;
+      case 6:
+        return appState.ownerDob != null;
+      case 7:
+        return appState.ownerAddress.isNotEmpty;
+      case 8:
+        return appState.startDate != null;
+      default:
+        return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
     return Scaffold(
       body: Container(
         color: Theme.of(context).colorScheme.primaryContainer,
@@ -45,8 +63,16 @@ class CheckoutPageState extends State<CheckoutPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Transform.translate(
+                    offset: Offset(15, 2),
+                    child: Image.asset(
+                      'assets/cat_checkout.png',
+                      width: 400.0,
+                      height: 100.0,
+                    ),
+                  ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(64, 0, 64, 24),
+                    padding: const EdgeInsets.fromLTRB(100, 0, 100, 8),
                     child: LinearProgressIndicator(
                       value: (_currentPage + 1) / 9,
                       backgroundColor: Color.fromRGBO(27, 27, 28, 1),
@@ -101,15 +127,15 @@ class CheckoutPageState extends State<CheckoutPage> {
                                   });
                                 },
                                 children: [
-                                  _buildCatNameQuestion(),
-                                  _buildCatGenderQuestion(),
-                                  _buildCatBreedQuestion(),
-                                  _buildCatAgeQuestion(),
-                                  _buildCatDeSexedQuestion(),
-                                  _buildOwnerNameQuestion(),
-                                  _buildOwnerDobQuestion(),
-                                  _buildOwnerAddressQuestion(),
-                                  _buildStartDateQuestion(),
+                                  _buildCatNameQuestion(appState),
+                                  _buildCatGenderQuestion(appState),
+                                  _buildCatBreedQuestion(appState),
+                                  _buildCatAgeQuestion(appState),
+                                  _buildCatDeSexedQuestion(appState),
+                                  _buildOwnerNameQuestion(appState),
+                                  _buildOwnerDobQuestion(appState),
+                                  _buildOwnerAddressQuestion(appState),
+                                  _buildStartDateQuestion(appState),
                                 ],
                               ),
                             ),
@@ -120,21 +146,23 @@ class CheckoutPageState extends State<CheckoutPage> {
                           child: IconButton(
                             iconSize: 32,
                             icon: Icon(Icons.arrow_circle_right_outlined),
-                            onPressed: () {
-                              if (_currentPage < 8) {
-                                _pageController.nextPage(
-                                  duration: Duration(milliseconds: 300),
-                                  curve: Curves.ease,
-                                );
-                              } else {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ConfirmOrder(),
-                                  ),
-                                );
-                              }
-                            },
+                            onPressed: _isPageValid(_currentPage)
+                                ? () {
+                                    if (_currentPage < 8) {
+                                      _pageController.nextPage(
+                                        duration: Duration(milliseconds: 300),
+                                        curve: Curves.ease,
+                                      );
+                                    } else {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ConfirmOrder(),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                : null,
                           ),
                         ),
                       ],
@@ -142,8 +170,15 @@ class CheckoutPageState extends State<CheckoutPage> {
                   ),
                   // TODO: Make tertiary button for CustomElevated?
                   TextButton(
-                    child: (Text('Back to basket')),
-                    onPressed: () => {Navigator.pop(context)},
+                    onPressed: () => Navigator.pop(context),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.arrow_back),
+                        SizedBox(width: 8),
+                        Text('Back to basket'),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -155,8 +190,7 @@ class CheckoutPageState extends State<CheckoutPage> {
   }
 
   // TODO: Create resuable components which are shared between these widgets
-//  TODO: Add full border/shadow around inputs inc date for consistency
-  Widget _buildCatNameQuestion() {
+  Widget _buildCatNameQuestion(MyAppState appState) {
     return FormContainer(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -190,9 +224,9 @@ class CheckoutPageState extends State<CheckoutPage> {
                   hintText: 'Enter pets name',
                 ),
                 textAlign: TextAlign.center,
-                initialValue: catName,
+                initialValue: appState.catName,
                 onChanged: (value) {
-                  catName = value;
+                  appState.setCatName(value);
                 },
               ),
             ),
@@ -202,7 +236,7 @@ class CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildCatGenderQuestion() {
+  Widget _buildCatGenderQuestion(MyAppState appState) {
     return FormContainer(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -220,10 +254,10 @@ class CheckoutPageState extends State<CheckoutPage> {
               children: [
                 CustomChoiceChip(
                   items: ['Boy', 'Girl'],
-                  selectedValue: catGender,
+                  selectedValue: appState.catGender,
                   onSelected: (selected) {
                     setState(() {
-                      catGender = selected;
+                      appState.setCatGender(selected);
                       _nextPage();
                     });
                   },
@@ -236,7 +270,7 @@ class CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildCatBreedQuestion() {
+  Widget _buildCatBreedQuestion(MyAppState appState) {
     return FormContainer(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -252,10 +286,8 @@ class CheckoutPageState extends State<CheckoutPage> {
             CustomDropdownButton(
               items: ['Siamese', 'Persian', 'Maine Coon', 'Other'],
               onChanged: (value) {
-                setState(() {
-                  catBreed = value ?? 'Other';
-                  _nextPage();
-                });
+                appState.setCatBreed(value ?? 'Other');
+                _nextPage();
               },
             ),
           ],
@@ -264,7 +296,7 @@ class CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildCatAgeQuestion() {
+  Widget _buildCatAgeQuestion(MyAppState appState) {
     return FormContainer(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -306,15 +338,15 @@ class CheckoutPageState extends State<CheckoutPage> {
                       lastDate: DateTime(2101),
                     );
                     if (pickedDate != null) {
-                      setState(() {
-                        catAge = pickedDate;
-                        _nextPage();
-                      });
+                      appState.setCatAge(pickedDate);
+                      _nextPage();
                     }
                   },
                   readOnly: true,
                   controller: TextEditingController(
-                    text: catAge != null ? catAge.toString().split(' ')[0] : '',
+                    text: appState.catAge != null
+                        ? appState.catAge.toString().split(' ')[0]
+                        : '',
                   ),
                 )),
           ],
@@ -323,7 +355,7 @@ class CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildCatDeSexedQuestion() {
+  Widget _buildCatDeSexedQuestion(MyAppState appState) {
     return FormContainer(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -341,16 +373,14 @@ class CheckoutPageState extends State<CheckoutPage> {
               children: [
                 CustomChoiceChip(
                   items: ['Yes', 'No'],
-                  selectedValue: catDeSexed == null
+                  selectedValue: appState.catDeSexed == null
                       ? ''
-                      : catDeSexed == true
+                      : appState.catDeSexed == true
                           ? 'Yes'
                           : 'No',
                   onSelected: (selected) {
-                    setState(() {
-                      catDeSexed = selected == 'Yes' ? true : false;
-                      _nextPage();
-                    });
+                    appState.setCatDeSexed(selected == 'Yes' ? true : false);
+                    _nextPage();
                   },
                 ),
               ],
@@ -361,7 +391,7 @@ class CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildOwnerNameQuestion() {
+  Widget _buildOwnerNameQuestion(MyAppState appState) {
     return FormContainer(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -395,9 +425,9 @@ class CheckoutPageState extends State<CheckoutPage> {
                   border: InputBorder.none,
                   hintText: 'Enter your name',
                 ),
-                initialValue: ownerName,
+                initialValue: appState.ownerName,
                 onChanged: (value) {
-                  ownerName = value;
+                  appState.setOwnerName(value);
                 },
               ),
             ),
@@ -407,7 +437,7 @@ class CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildOwnerDobQuestion() {
+  Widget _buildOwnerDobQuestion(MyAppState appState) {
     return FormContainer(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -449,16 +479,14 @@ class CheckoutPageState extends State<CheckoutPage> {
                       lastDate: DateTime(2101),
                     );
                     if (pickedDate != null) {
-                      setState(() {
-                        ownerDob = pickedDate;
-                        _nextPage();
-                      });
+                      appState.setOwnerDob(pickedDate);
+                      _nextPage();
                     }
                   },
                   readOnly: true,
                   controller: TextEditingController(
-                    text: ownerDob != null
-                        ? ownerDob.toString().split(' ')[0]
+                    text: appState.ownerDob != null
+                        ? appState.ownerDob.toString().split(' ')[0]
                         : '',
                   ),
                 )),
@@ -468,7 +496,7 @@ class CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildOwnerAddressQuestion() {
+  Widget _buildOwnerAddressQuestion(MyAppState appState) {
     return FormContainer(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -502,9 +530,9 @@ class CheckoutPageState extends State<CheckoutPage> {
                   border: InputBorder.none,
                   hintText: 'Enter address',
                 ),
-                initialValue: ownerAddress,
+                initialValue: appState.ownerAddress,
                 onChanged: (value) {
-                  ownerAddress = value;
+                  appState.setOwnerAddress(value);
                 },
               ),
             )
@@ -514,7 +542,7 @@ class CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildStartDateQuestion() {
+  Widget _buildStartDateQuestion(MyAppState appState) {
     return FormContainer(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -556,16 +584,14 @@ class CheckoutPageState extends State<CheckoutPage> {
                       lastDate: DateTime(2101),
                     );
                     if (pickedDate != null) {
-                      setState(() {
-                        startDate = pickedDate;
-                        _nextPage();
-                      });
+                      appState.setStartDate(pickedDate);
+                      _nextPage();
                     }
                   },
                   readOnly: true,
                   controller: TextEditingController(
-                    text: startDate != null
-                        ? startDate.toString().split(' ')[0]
+                    text: appState.startDate != null
+                        ? appState.startDate.toString().split(' ')[0]
                         : '',
                   ),
                 )),

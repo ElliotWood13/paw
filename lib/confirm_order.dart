@@ -20,6 +20,7 @@ class ConfirmOrder extends StatelessWidget {
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                    Text('Confirm Order Page'),
                     TextButton(
                       child: (Text('Back to checkout')),
                       onPressed: () => {Navigator.pop(context)},
