@@ -17,7 +17,7 @@ class EmptyPage extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 80.0),
+          padding: const EdgeInsets.only(top: 60.0),
           child: Column(
             children: [
               Stack(
@@ -90,7 +90,7 @@ class EmptyPage extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 40),
+              SizedBox(height: 32),
               Text(
                 'Latest Feline News',
                 textAlign: TextAlign.center,
